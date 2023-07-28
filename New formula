@@ -1,0 +1,47 @@
+The provided VBA script uses a regular expression pattern to extract dates from text. However, the current pattern in the script is not specifically designed to handle the format "Jan2023". The pattern used in the script focuses on date formats like "dd-mm-yyyy", "yyyy_mmm", "mmm-yyyy", and others, but it doesn't cover the "Jan2023" format.
+
+To handle the "Jan2023" format, you'll need to modify the regular expression pattern to capture this type of date. Here's an updated pattern that includes the "Jan2023" format:
+
+```vba
+Sub ExtractAndCreateDateColumn()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim datePattern As String
+    Dim regex As Object
+    Dim matches As Object
+    Dim cell As Range
+    
+    ' Set the worksheet to work with
+    Set ws = ThisWorkbook.Worksheets("Sheet1") ' Change "Sheet1" to your sheet name
+    
+    ' Set the regex pattern to match different date formats, including "Jan2023"
+    datePattern = "\b(?:\d{1,2}-\d{1,2}-\d{4}|\d{4}-\d{1,2}-\d{1,2}|\d{4}_\w{3}|\w{3}-\d{4}|\d{2}\w{3}\d{2}|\w{3}\d{2}|[a-zA-Z]{3}\d{4})\b"
+    
+    ' Create a regex object
+    Set regex = CreateObject("VBScript.RegExp")
+    regex.Global = True
+    regex.IgnoreCase = True
+    regex.Pattern = datePattern
+    
+    ' Find the last row with data in column A
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    ' Add a new column to store extracted dates
+    ws.Columns("B").Insert
+    
+    ' Loop through the rows and extract dates
+    For Each cell In ws.Range("A2:A" & lastRow)
+        If regex.Test(cell.Value) Then
+            Set matches = regex.Execute(cell.Value)
+            cell.Offset(0, 1).Value = matches(0)
+        End If
+    Next cell
+    
+    ' Clean up
+    Set regex = Nothing
+    Set matches = Nothing
+    Set ws = Nothing
+End Sub
+```
+
+Now the updated pattern should handle the "Jan2023" format in addition to the other date formats mentioned earlier.
